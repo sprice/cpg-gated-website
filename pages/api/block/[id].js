@@ -1,4 +1,3 @@
-import React from "react";
 import { withIronSessionApiRoute } from "iron-session/next";
 const { Client } = require("@notionhq/client");
 import { ironOptions } from "../utils";
@@ -13,9 +12,8 @@ const handler = async (req, res) => {
   switch (method) {
     case "GET":
       const response = await notion.blocks.children.list({
-        block_id: id,
+        block_id: id, // @TODO: error handle a bad result here
       });
-      console.log("response", response);
       res.send({ response });
       break;
     default:

@@ -1,10 +1,12 @@
 import { Fragment, useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import ErrorPage from "next/error";
 import ReactHtmlParser from "react-html-parser";
 const { NotionBlocksHtmlParser } = require("@notion-stuff/blocks-html-parser");
 const parser = NotionBlocksHtmlParser.getInstance();
 import Head from "next/head";
 import NavBar from "../components/NavBar";
+import { getPage } from "../config";
 
 export default function Page() {
   const router = useRouter();
@@ -12,35 +14,51 @@ export default function Page() {
   const [response, setResponse] = useState();
   const [blockId, setBlockId] = useState();
   const [markup, setMarkup] = useState();
+  const [notFound, setNotFound] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
-    if (blockId) return;
-    setBlockId("aae345d6a11c4cce9e39e8cde5036335");
-  }, []);
+    if (!path) return;
+    const page = getPage(path);
+    if (!page?.blockId) {
+      setNotFound(true);
+    } else {
+      setBlockId(page.blockId);
+    }
+  }, [path]);
 
   useEffect(() => {
-    setPath(router?.query?.path);
-  }, [router?.query?.path]);
+    if (router?.asPath === "/[[...index]]") return; // @TODO: This doesn't feel very Nexty
+    if (path && path !== router?.asPath) {
+      setRefresh(true);
+    }
+    setPath(router?.asPath);
+  }, [router?.asPath]);
 
   useEffect(() => {
     async function getResponse() {
-      if (!path || response || !blockId) return;
-      console.log("blockId", blockId);
+      if (!blockId) return;
       fetch(`/api/block/${blockId}`)
         .then((response) => response.json())
         .then((data) => {
-          console.log("data", data);
           const { response } = data;
           setResponse(response);
         });
     }
     getResponse();
-  }, [path, response, blockId]);
+  }, [path, blockId, setRefresh]);
 
   useEffect(() => {
-    if (!response || markup || !blockId) return;
-    setMarkup(parser.parse(response.results));
-  }, [response, markup, blockId]);
+    if (!response?.results) return;
+    setMarkup(parser.parse(response?.results));
+    setResponse(undefined); // @TODO: Find a way to not do this
+    setBlockId(undefined); // @TODO: Find a way to not do this
+    setRefresh(false);
+  }, [response, blockId]);
+
+  if (notFound) {
+    return <ErrorPage statusCode="404" />;
+  }
 
   return (
     <Fragment>

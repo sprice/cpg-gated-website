@@ -1,7 +1,8 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment } from "react";
+import Link from "next/link";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MenuIcon, XIcon } from "@heroicons/react/outline";
+import config from "../../config";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -29,30 +30,13 @@ export default function NavBar() {
                 <div className="flex-shrink-0 flex items-center">🎈</div>
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                   {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
-                  <a
-                    href="#"
-                    className="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                  >
-                    Dashboard
-                  </a>
-                  <a
-                    href="#"
-                    className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                  >
-                    Team
-                  </a>
-                  <a
-                    href="#"
-                    className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                  >
-                    Projects
-                  </a>
-                  <a
-                    href="#"
-                    className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                  >
-                    Calendar
-                  </a>
+                  {config.map((link, index) => (
+                    <Link href={link.path} key={index}>
+                      <a className="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        {link.title}
+                      </a>
+                    </Link>
+                  ))}
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0"></div>
@@ -62,34 +46,16 @@ export default function NavBar() {
           <Disclosure.Panel className="sm:hidden">
             <div className="pt-2 pb-4 space-y-1">
               {/* Current: "bg-indigo-50 border-indigo-500 text-indigo-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" */}
-              <Disclosure.Button
-                as="a"
-                href="#"
-                className="bg-indigo-50 border-indigo-500 text-indigo-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-              >
-                Dashboard
-              </Disclosure.Button>
-              <Disclosure.Button
-                as="a"
-                href="#"
-                className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-              >
-                Team
-              </Disclosure.Button>
-              <Disclosure.Button
-                as="a"
-                href="#"
-                className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-              >
-                Projects
-              </Disclosure.Button>
-              <Disclosure.Button
-                as="a"
-                href="#"
-                className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-              >
-                Calendar
-              </Disclosure.Button>
+              {config.map((link, index) => (
+                <Disclosure.Button
+                  as="a"
+                  key={index}
+                  href={link.path}
+                  className="bg-indigo-50 border-indigo-500 text-indigo-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+                >
+                  {link.title}
+                </Disclosure.Button>
+              ))}
             </div>
           </Disclosure.Panel>
         </>
