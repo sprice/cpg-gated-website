@@ -33,7 +33,7 @@ export default function Page() {
       setRefresh(true);
     }
     setPath(router?.asPath);
-  }, [router?.asPath]);
+  }, [router?.asPath, path]);
 
   useEffect(() => {
     async function getResponse() {
