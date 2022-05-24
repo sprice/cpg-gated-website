@@ -16,6 +16,8 @@ export default function Page() {
   const [markup, setMarkup] = useState();
   const [notFound, setNotFound] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const [ownsToken, setOwnsToken] = useState(false);
+  const [isTokenGated, setIsTokenGated] = useState(false);
 
   useEffect(() => {
     if (!path) return;
@@ -24,6 +26,7 @@ export default function Page() {
       setNotFound(true);
     } else {
       setBlockId(page.blockId);
+      setIsTokenGated(page.private);
     }
   }, [path]);
 
@@ -36,6 +39,7 @@ export default function Page() {
   }, [router?.asPath, path]);
 
   useEffect(() => {
+    if (isTokenGated && !ownsToken) return;
     async function getResponse() {
       if (!blockId) return;
       fetch(`/api/block/${blockId}`)
@@ -46,7 +50,7 @@ export default function Page() {
         });
     }
     getResponse();
-  }, [path, blockId, setRefresh]);
+  }, [path, blockId, setRefresh, ownsToken, isTokenGated]);
 
   useEffect(() => {
     if (!response?.results) return;
@@ -65,7 +69,7 @@ export default function Page() {
       <Head>
         <title>Pop 🎈</title>
       </Head>
-      <NavBar />
+      <NavBar ownsToken={ownsToken} setOwnsToken={setOwnsToken} />
       {ReactHtmlParser(markup)}
     </Fragment>
   );

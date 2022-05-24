@@ -1,4 +1,4 @@
-const config = [
+export const navConfig = [
   {
     title: "Start Here",
     blockId: "aae345d6a11c4cce9e39e8cde5036335",
@@ -20,7 +20,5 @@ const config = [
 ];
 
 export const getPage = (path) => {
-  return config.find((page) => path == page.path);
+  return navConfig.find((page) => path == page.path);
 };
-
-export default config;
