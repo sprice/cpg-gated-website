@@ -23,38 +23,31 @@ export default function ConnectWalletButton(props) {
   const isMounted = useIsMounted();
 
   const { data: account } = useAccount();
-  const { data: ensAvatar } = useEnsAvatar({ addressOrName: account?.address });
-  const { data: ensName } = useEnsName({ address: account?.address });
-  const { connect, connectors, error, isConnecting, pendingConnector } =
+  const { connectAsync, connectors, error, isConnecting, pendingConnector } =
     useConnect();
   const { disconnect } = useDisconnect();
   const { activeChain } = useNetwork();
 
   const { signMessageAsync } = useSignMessage();
 
-  const signIn = React.useCallback(async () => {
+  // Connect wallet and Sign In With Ethereum
+  const signIn = React.useCallback(async (connector) => {
     try {
-      const address = account?.address;
-      const chainId = activeChain?.id;
-      if (!address || !chainId) return;
-
-      setState((x) => ({ ...x, error: undefined, loading: true }));
-      // Fetch random nonce, create SIWE message, and sign with wallet
+      const res = await connectAsync(connector);
       const nonceRes = await fetch("/api/nonce");
       const message = new SiweMessage({
         domain: window.location.host,
-        address,
+        address: res.account,
         statement: "Sign in with Ethereum to the app.",
         uri: window.location.origin,
         version: "1",
-        chainId,
+        chainId: res.chain?.id,
         nonce: await nonceRes.text(),
       });
-      const signature = await signMessageAsync({
-        message: message.prepareMessage(),
-      });
 
-      // Verify signature
+      const signer = await connector.getSigner();
+      const signature = await signer.signMessage(message.prepareMessage());
+
       const verifyRes = await fetch("/api/verify", {
         method: "POST",
         headers: {
@@ -64,12 +57,15 @@ export default function ConnectWalletButton(props) {
       });
       if (!verifyRes.ok) throw new Error("Error verifying message");
 
-      setState((x) => ({ ...x, address, loading: false }));
+      setState((x) => ({ ...x, address: res.account, loading: false }));
     } catch (error) {
+      disconnect();
+      await fetch("/api/logout");
       setState((x) => ({ ...x, error, loading: false }));
     }
   }, []);
 
+  // Check for tokens owned
   React.useEffect(() => {
     const handler = async () => {
       try {
@@ -85,8 +81,9 @@ export default function ConnectWalletButton(props) {
     // 2. window is focused (in case user logs out of another window)
     window.addEventListener("focus", handler);
     return () => window.removeEventListener("focus", handler);
-  }, [state.address]);
+  }, [state?.address]);
 
+  // Check if user is Signed In With Ethereum
   React.useEffect(() => {
     const handler = async () => {
       try {
@@ -115,8 +112,9 @@ export default function ConnectWalletButton(props) {
 
   if (!isMounted) return;
 
-  if (account) {
-    const prettyAddress = shortAddress(account.address);
+  const prettyAddress = shortAddress(state?.address);
+
+  if (state.address) {
     return (
       <div>
         {/* <img src={ensAvatar} alt="ENS Avatar" /> */}
@@ -124,66 +122,46 @@ export default function ConnectWalletButton(props) {
         {alignSide && (
           <>
             <p>
-              <small>
-                {ensName ? `${ensName} (${prettyAddress})` : prettyAddress}
-              </small>
+              <small>Connected as ${prettyAddress}</small>
             </p>
             <p>
               <small>Connected with {account?.connector?.name}</small>
-            </p>
-            <p>
-              <button
-                type="button"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={disconnectWallet}
-              >
-                Disconnect
-              </button>
             </p>
           </>
         )}
         {!alignSide && (
           <>
-            <small>
-              {ensName ? `${ensName} (${prettyAddress})` : prettyAddress}
-            </small>
-            <button
-              type="button"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={disconnectWallet}
-            >
-              Disconnect
-            </button>
+            <small className="mr-2">Connected as {prettyAddress}</small>
           </>
         )}
-        {state.address ? (
-          <button
-            type="button"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            onClick={async () => {
-              await fetch("/api/logout");
-              setState({});
-            }}
-          >
-            Sign Out
-          </button>
-        ) : (
-          <button
-            type="button"
-            disabled={state.loading}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            onClick={signIn}
-          >
-            Sign-In with Ethereum
-          </button>
-        )}
+
+        <button
+          type="button"
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          onClick={async () => {
+            await fetch("/api/logout");
+            disconnectWallet();
+            setState({});
+          }}
+        >
+          Sign Out
+        </button>
       </div>
     );
   }
 
   return (
     <>
-      <ConnectWalletModal open={open} setOpen={setOpen} />
+      <ConnectWalletModal
+        open={open}
+        setOpen={setOpen}
+        signIn={signIn}
+        connectors={connectors}
+        error={state?.error}
+        isConnecting={isConnecting}
+        pendingConnector={pendingConnector}
+        disconnect={disconnect}
+      />
       <button
         type="button"
         className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

@@ -19,7 +19,7 @@ export default function NavBar(props) {
             <div className="flex justify-between h-16">
               <div className="flex">
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                  {navConfig.map((link, index) => {
+                  {navConfig.config.map((link, index) => {
                     if (link.private && !ownsToken) return;
                     return (
                       <Link href={link.path} key={index}>
@@ -53,7 +53,7 @@ export default function NavBar(props) {
 
           <Disclosure.Panel className="sm:hidden">
             <div className="pt-2 pb-3 space-y-1">
-              {navConfig.map((link, index) => {
+              {navConfig.config.map((link, index) => {
                 if (link.private && !ownsToken) return;
                 return (
                   <Disclosure.Button

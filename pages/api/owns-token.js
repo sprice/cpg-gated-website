@@ -12,7 +12,9 @@ const handler = async (req, res) => {
     case "GET":
       const owner = req.session.siwe?.address;
       if (!owner) {
-        return res.status(404).end(`Address not signed in`);
+        return res
+          .status(404)
+          .json({ status: 404, message: `Address not signed in` });
       }
 
       const genesis = await aWeb3.alchemy.getNfts({

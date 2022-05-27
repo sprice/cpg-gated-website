@@ -1,30 +1,39 @@
 /* This example requires Tailwind CSS v2.0+ */
 import { Fragment } from "react";
-import { useConnect } from "wagmi";
 import { Dialog, Transition } from "@headlessui/react";
 
-export default function ConnectWalletModal({ open, setOpen }) {
-  const { connect, connectors, error, isConnecting, pendingConnector } =
-    useConnect();
-
+export default function ConnectWalletModal({
+  open,
+  setOpen,
+  signIn,
+  connectors,
+  error,
+  isConnecting,
+  pendingConnector,
+}) {
   const renderConnectors = () => (
     <div>
-      {connectors.map((connector) => (
-        <div key={connector.id}>
-          <button
-            type="button"
-            className="mb-2 w-full inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            disabled={!connector.ready}
-            onClick={() => connect(connector)}
-          >
-            {connector.name}
-            {!connector.ready && " (unsupported)"}
-            {isConnecting &&
-              connector.id === pendingConnector?.id &&
-              " (connecting)"}
-          </button>
-        </div>
-      ))}
+      {connectors.map((connector) => {
+        if (connector.name === "Injected") return;
+        return (
+          <div key={connector.id}>
+            <button
+              type="button"
+              className="mb-2 w-full inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              disabled={!connector.ready}
+              onClick={() => {
+                signIn(connector);
+              }}
+            >
+              {connector.name}
+              {!connector.ready && " (unsupported)"}
+              {isConnecting &&
+                connector.id === pendingConnector?.id &&
+                " (connecting)"}
+            </button>
+          </div>
+        );
+      })}
 
       {error && <div>{error.message}</div>}
     </div>
