@@ -1,24 +1,44 @@
 export const navConfig = {
   config: [
     {
-      title: "Start Here",
-      blockId: "aae345d6a11c4cce9e39e8cde5036335",
+      title: "Home",
+      blockId: "2ce8af5320e54b09b6e924f246474816",
       path: "/",
       private: false,
     },
     {
-      title: "Future Gated Page One",
-      blockId: "02a59d96341f4b26848b266c2baabca4",
-      path: "/gated-one",
+      title: "Gated: One",
+      blockId: "32e8f081be364b64a5e4cfb05d0553ec",
+      path: "/one",
       private: true,
     },
     {
-      title: "Future Gated Page Two",
-      blockId: "ca9286892cae4c00a8b89952cc74ff4c",
-      path: "/gated-two",
+      title: "Gated: Two",
+      blockId: "8dae98cbf47943eaa91bbb02bfee9568",
+      path: "/two",
       private: true,
     },
   ],
+  // config: [
+  //   {
+  //     title: "Page",
+  //     blockId: "777c2af47da84cef8c8846bb038fc97f",
+  //     path: "/1",
+  //     private: false,
+  //   },
+  //   {
+  //     title: "Callout",
+  //     blockId: "5393eec2b27848f08241d649baa678de",
+  //     path: "/2",
+  //     private: true,
+  //   },
+  //   {
+  //     title: "Divider",
+  //     blockId: "d2358f140288425d91618df4286eebcb",
+  //     path: "/3",
+  //     private: true,
+  //   },
+  // ],
 };
 
 export const getPage = (path) => {

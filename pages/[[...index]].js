@@ -6,6 +6,7 @@ const { NotionBlocksHtmlParser } = require("@notion-stuff/blocks-html-parser");
 const parser = NotionBlocksHtmlParser.getInstance();
 import Head from "next/head";
 import NavBar from "../components/NavBar";
+import Footer from "../components/Footer";
 import { getPage } from "../config";
 
 export default function Page() {
@@ -18,6 +19,7 @@ export default function Page() {
   const [refresh, setRefresh] = useState(false);
   const [ownsToken, setOwnsToken] = useState(false);
   const [isTokenGated, setIsTokenGated] = useState(false);
+  const [iframeUrl, setIframeUrl] = useState();
 
   useEffect(() => {
     if (!path) return;
@@ -42,23 +44,24 @@ export default function Page() {
     if (isTokenGated && !ownsToken) return;
     async function getResponse() {
       if (!blockId) return;
-      fetch(`/api/block/${blockId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          const { response } = data;
-          setResponse(response);
-        });
+      setIframeUrl(`https://v1.embednotion.com/embed/${blockId}`);
+      // fetch(`/api/block/${blockId}`)
+      //   .then((response) => response.json())
+      //   .then((data) => {
+      //     const { response } = data;
+      //     setResponse(response);
+      //   });
     }
     getResponse();
   }, [path, blockId, setRefresh, ownsToken, isTokenGated]);
 
-  useEffect(() => {
-    if (!response?.results) return;
-    setMarkup(parser.parse(response?.results));
-    setResponse(undefined); // @TODO: Find a way to not do this
-    setBlockId(undefined); // @TODO: Find a way to not do this
-    setRefresh(false);
-  }, [response, blockId]);
+  // useEffect(() => {
+  //   if (!response?.results) return;
+  //   setMarkup(parser.parse(response?.results));
+  //   setResponse(undefined); // @TODO: Find a way to not do this
+  //   setBlockId(undefined); // @TODO: Find a way to not do this
+  //   setRefresh(false);
+  // }, [response, blockId]);
 
   if (notFound) {
     return <ErrorPage statusCode="404" />;
@@ -69,8 +72,16 @@ export default function Page() {
       <Head>
         <title>Pop 🎈</title>
       </Head>
-      <NavBar ownsToken={ownsToken} setOwnsToken={setOwnsToken} />
-      {ReactHtmlParser(markup)}
+      <main>
+        <NavBar ownsToken={ownsToken} setOwnsToken={setOwnsToken} />
+        {/* {ReactHtmlParser(markup)} */}
+        <div className="embed">
+          {iframeUrl && (
+            <iframe src={iframeUrl} height="100%" scrolling="no"></iframe>
+          )}
+        </div>
+        <Footer />
+      </main>
     </Fragment>
   );
 }
