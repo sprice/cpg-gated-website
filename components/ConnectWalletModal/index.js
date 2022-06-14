@@ -19,7 +19,7 @@ export default function ConnectWalletModal({
           <div key={connector.id}>
             <button
               type="button"
-              className="mb-2 w-full inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="mb-2 w-full inline-flex items-center px-4 py-2 border border-transparent text-sm font-cpg rounded-md shadow-sm text-white bg-cpg-red hover:bg-cpg-red focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cpg-red"
               disabled={!connector.ready}
               onClick={() => {
                 signIn(connector);

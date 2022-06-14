@@ -1,12 +1,11 @@
 import { Fragment, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
-import ReactHtmlParser from "react-html-parser";
-const { NotionBlocksHtmlParser } = require("@notion-stuff/blocks-html-parser");
-const parser = NotionBlocksHtmlParser.getInstance();
+// import ReactHtmlParser from "react-html-parser";
+// const { NotionBlocksHtmlParser } = require("@notion-stuff/blocks-html-parser");
+// const parser = NotionBlocksHtmlParser.getInstance();
 import Head from "next/head";
 import NavBar from "../components/NavBar";
-import Footer from "../components/Footer";
 import { getPage } from "../config";
 
 export default function Page() {
@@ -80,7 +79,6 @@ export default function Page() {
             <iframe src={iframeUrl} height="100%" scrolling="no"></iframe>
           )}
         </div>
-        <Footer />
       </main>
     </Fragment>
   );

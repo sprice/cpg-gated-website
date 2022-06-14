@@ -23,7 +23,7 @@ export default function NavBar(props) {
                     if (link.private && !ownsToken) return;
                     return (
                       <Link href={link.path} key={index}>
-                        <a className="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        <a className="border-red-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-extralight font-cpg">
                           {link.title}
                         </a>
                       </Link>
@@ -39,7 +39,7 @@ export default function NavBar(props) {
               </div>
               <div className="-mr-2 flex items-center sm:hidden">
                 {/* Mobile menu button */}
-                <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-500">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
                     <XIcon className="block h-6 w-6" aria-hidden="true" />
@@ -60,7 +60,7 @@ export default function NavBar(props) {
                     as="a"
                     key={index}
                     href={link.path}
-                    className="bg-indigo-50 border-indigo-500 text-indigo-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+                    className="bg-red-50 border-cpg-red text-cpg-red block pl-3 pr-4 py-2 border-l-4 text-base font-extralight font-cpg"
                   >
                     {link.title}
                   </Disclosure.Button>
