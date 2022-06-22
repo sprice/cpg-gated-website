@@ -76,7 +76,7 @@ export default function Page() {
         {/* {ReactHtmlParser(markup)} */}
         <div className="embed">
           {iframeUrl && (
-            <iframe src={iframeUrl} height="100%" scrolling="no"></iframe>
+            <iframe src={iframeUrl} height="100%" scrolling="yes"></iframe>
           )}
         </div>
       </main>
